@@ -1,0 +1,21 @@
+node_modules/
+dist/
+.env
+.env.local
+*.log
+.DS_Store
+data/*.db
+data/*.db-journal
+uploads/
+.vscode/
+.idea/
+
+# occt bundle is copied from node_modules by scripts/copy-occt.js
+public/occt/
+
+# SQLite write-ahead log / shared memory hold live data too
+data/*.db-wal
+data/*.db-shm
+
+# Per-machine Claude Code permissions (launch.json is shared)
+.claude/settings.local.json

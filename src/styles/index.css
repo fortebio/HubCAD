@@ -1,0 +1,499 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Design tokens — single source of truth for surfaces, text,
+   borders and motion. Dark values are redefined under .dark.
+   ============================================================ */
+@layer base {
+  :root {
+    /* Surfaces */
+    --surface: #ffffff;
+    --surface-sunken: #f5f6f8;
+    --surface-hover: #f9fafb;
+    --surface-muted: #f3f4f6;
+
+    /* Borders */
+    --border: #e5e7eb;
+    --border-strong: #d1d5db;
+
+    /* Text */
+    --text: #1f2937;
+    --text-strong: #111827;
+    --text-muted: #6b7280;
+    --text-subtle: #9ca3af;
+
+    /* Brand */
+    --brand: #1a6ff5;
+    --brand-strong: #1558cc;
+    --brand-tint: #eff6ff;
+    --brand-ring: rgba(26, 111, 245, 0.45);
+
+    /* Radius */
+    --radius-sm: 6px;
+    --radius: 10px;
+    --radius-lg: 12px;
+
+    /* Motion — one scale, used everywhere */
+    --dur-fast: 120ms;
+    --dur: 180ms;
+    --dur-slow: 260ms;
+    --ease: cubic-bezier(0.2, 0, 0, 1);
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-800 font-sans;
+    font-size: 13px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1 {
+    @apply text-xl font-bold text-gray-900;
+    line-height: 1.3;
+    text-wrap: balance;
+  }
+
+  h2 {
+    @apply text-[15px] font-semibold text-gray-800;
+    line-height: 1.3;
+    text-wrap: balance;
+  }
+
+  *:focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+
+  /* Mouse users never see the ring; keyboard users always do. */
+  *:focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: theme('colors.gray.50');
+  }
+  ::-webkit-scrollbar-thumb {
+    background: theme('colors.gray.300');
+    border-radius: 5px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: theme('colors.gray.400');
+  }
+
+  /* Respect the OS "reduce motion" setting everywhere. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white border border-gray-200 rounded-card p-5;
+    transition: box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  }
+  .card-interactive {
+    @apply hover:shadow-card hover:border-gray-300 cursor-pointer;
+  }
+  .badge {
+    @apply inline-flex items-center text-xs font-semibold px-2.5 py-0.5 rounded-full whitespace-nowrap;
+    transition: background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+  }
+  .mono {
+    @apply font-mono font-medium;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-5 rounded-lg text-[13px] font-medium disabled:opacity-50 disabled:pointer-events-none;
+    min-height: 34px;
+    transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease),
+      color var(--dur) var(--ease), transform var(--dur-fast) var(--ease);
+  }
+  .btn:active {
+    transform: scale(0.98);
+  }
+  .btn-primary {
+    @apply btn bg-primary-500 text-white hover:bg-primary-600;
+  }
+  .btn-secondary {
+    @apply btn bg-transparent border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400;
+  }
+  .btn-danger {
+    @apply btn bg-transparent border border-red-500 text-red-600 hover:bg-red-50;
+  }
+  .btn-ghost {
+    @apply btn bg-transparent text-primary-500 hover:bg-primary-50;
+  }
+  .btn-sm {
+    @apply px-3 text-xs;
+    min-height: 28px;
+  }
+
+  /* Icon-only control. Comfortable on a mouse, thumb-sized on touch. */
+  .icon-btn {
+    @apply inline-flex items-center justify-center rounded-md text-gray-500;
+    min-width: 34px;
+    min-height: 34px;
+    transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+  }
+  .icon-btn:hover {
+    @apply text-gray-800 bg-gray-100;
+  }
+
+  /* Touch devices: interactive targets reach the 44px minimum. */
+  @media (pointer: coarse) {
+    .icon-btn {
+      min-width: 44px;
+      min-height: 44px;
+    }
+    .btn {
+      min-height: 44px;
+    }
+    .btn-sm {
+      min-height: 44px;
+    }
+  }
+
+  .input {
+    @apply w-full px-3 py-2 text-[13px] border border-gray-300 rounded-lg bg-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none;
+    min-height: 34px;
+    transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  }
+  .input-error {
+    @apply border-red-400 focus:border-red-500 focus:ring-red-500;
+  }
+  .label {
+    @apply text-xs font-semibold text-gray-500 uppercase tracking-wider;
+  }
+  .hint {
+    @apply text-[11px] text-gray-500 mt-1;
+  }
+  .error-text {
+    @apply text-[11px] text-red-600 mt-1 flex items-center gap-1;
+  }
+
+  /* Sticky table header — column meaning stays visible while scrolling. */
+  .table-sticky thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: var(--surface);
+  }
+
+  /* Loading placeholder that reserves layout space (no CLS). */
+  .skeleton {
+    @apply rounded-md bg-gray-200;
+    position: relative;
+    overflow: hidden;
+  }
+  .skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+    animation: skeleton-shimmer 1.4s infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .skeleton::after {
+      animation: none;
+    }
+  }
+
+  /* Skip link — first tab stop, hidden until focused. */
+  .skip-link {
+    @apply absolute left-4 z-50 px-4 py-2 rounded-lg bg-primary-500 text-white text-[13px] font-medium;
+    top: -100px;
+    transition: top var(--dur) var(--ease);
+  }
+  .skip-link:focus {
+    top: 12px;
+  }
+}
+
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-overlay-in {
+  animation: overlay-in var(--dur) var(--ease) both;
+}
+.animate-dialog-in {
+  animation: dialog-in var(--dur-slow) var(--ease-out) both;
+}
+.animate-toast-in {
+  animation: toast-in var(--dur-slow) var(--ease-out) both;
+}
+
+/* ============================================================
+   Dark mode — semantic overrides applied when .dark is on <html>.
+   We override commonly-used Tailwind utility classes so existing
+   pages do not need per-element dark: variants.
+   ============================================================ */
+:root.dark {
+  color-scheme: dark;
+
+  --surface: #1a1d24;
+  --surface-sunken: #0f1217;
+  --surface-hover: #1f2329;
+  --surface-muted: #22262d;
+
+  --border: #2a2f37;
+  --border-strong: #3a4047;
+
+  --text: #d0d4d9;
+  --text-strong: #e6e8eb;
+  --text-muted: #9ba2aa;
+  --text-subtle: #7a818a;
+
+  --brand: #6ea8ff;
+  --brand-strong: #8ab9ff;
+  --brand-tint: rgba(110, 168, 255, 0.12);
+  --brand-ring: rgba(110, 168, 255, 0.5);
+}
+
+.dark body {
+  background-color: #0f1217;
+  color: #d0d4d9;
+}
+
+.dark h1 {
+  color: #e6e8eb;
+}
+.dark h2 {
+  color: #d0d4d9;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #14181e;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #2a2f37;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #3a4047;
+}
+
+/* Surfaces */
+.dark .bg-white { background-color: #1a1d24 !important; }
+.dark .bg-gray-50 { background-color: #0f1217 !important; }
+.dark .bg-gray-100 { background-color: #22262d !important; }
+.dark .bg-gray-200 { background-color: #2a2f37 !important; }
+
+/* Hover surfaces */
+.dark .hover\:bg-gray-50:hover { background-color: #1f2329 !important; }
+.dark .hover\:bg-gray-100:hover { background-color: #262a32 !important; }
+
+/* Borders */
+.dark .border-gray-100 { border-color: #22262d !important; }
+.dark .border-gray-200 { border-color: #2a2f37 !important; }
+.dark .border-gray-300 { border-color: #3a4047 !important; }
+.dark .hover\:border-gray-300:hover { border-color: #3a4047 !important; }
+.dark .hover\:border-gray-400:hover { border-color: #4a5058 !important; }
+
+.dark .divide-gray-100 > * + * { border-color: #22262d !important; }
+.dark .divide-gray-200 > * + * { border-color: #2a2f37 !important; }
+
+/* Text — contrast raised for the muted greys (WCAG AA on #0f1217). */
+.dark .text-gray-900 { color: #e6e8eb !important; }
+.dark .text-gray-800 { color: #d0d4d9 !important; }
+.dark .text-gray-700 { color: #b8bdc4 !important; }
+.dark .text-gray-600 { color: #a3aab2 !important; }
+.dark .text-gray-500 { color: #8b929a !important; }
+.dark .text-gray-400 { color: #767d86 !important; }
+.dark .text-gray-300 { color: #5e656d !important; }
+
+/* Component utility classes from @layer components */
+.dark .card {
+  background-color: #1a1d24;
+  border-color: #2a2f37;
+}
+.dark .card-interactive:hover {
+  border-color: #3a4047;
+}
+.dark .btn-secondary {
+  border-color: #3a4047;
+  color: #d0d4d9;
+}
+.dark .btn-secondary:hover {
+  background-color: #22262d;
+}
+.dark .btn-ghost {
+  color: #6ea8ff;
+}
+.dark .btn-ghost:hover {
+  background-color: rgba(110, 168, 255, 0.1);
+}
+.dark .icon-btn {
+  color: #9ba2aa;
+}
+.dark .icon-btn:hover {
+  color: #e6e8eb;
+  background-color: #262a32;
+}
+.dark .input {
+  background-color: #14181e;
+  border-color: #3a4047;
+  color: #e6e8eb;
+}
+.dark .input::placeholder {
+  color: #767d86;
+}
+.dark .skeleton {
+  background-color: #22262d;
+}
+.dark .skeleton::after {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+}
+.dark .table-sticky thead th {
+  background-color: #1a1d24;
+}
+
+/* Primary tint backgrounds (used for hover/active states) */
+.dark .bg-primary-50 { background-color: rgba(110, 168, 255, 0.12) !important; }
+.dark .bg-primary-50\/50 { background-color: rgba(110, 168, 255, 0.06) !important; }
+.dark .bg-primary-100 { background-color: rgba(110, 168, 255, 0.18) !important; }
+.dark .hover\:bg-primary-50:hover { background-color: rgba(110, 168, 255, 0.14) !important; }
+.dark .border-primary-200 { border-color: rgba(110, 168, 255, 0.3) !important; }
+.dark .border-primary-300 { border-color: rgba(110, 168, 255, 0.45) !important; }
+.dark .text-primary-500 { color: #6ea8ff !important; }
+.dark .text-primary-600 { color: #8ab9ff !important; }
+.dark .text-primary-700 { color: #a3caff !important; }
+/* Opacity-modified variants need their own rule: the base override above does
+   not match .text-primary-700\/80. */
+.dark .text-primary-700\/80 { color: rgba(163, 202, 255, 0.85) !important; }
+
+/* Status badge tints — keep readable on dark */
+.dark .bg-red-50 { background-color: rgba(239, 68, 68, 0.12) !important; }
+.dark .bg-red-100 { background-color: rgba(239, 68, 68, 0.18) !important; }
+.dark .text-red-600 { color: #ff8a8a !important; }
+.dark .text-red-700 { color: #ffa3a3 !important; }
+.dark .text-red-800 { color: #ffbcbc !important; }
+.dark .hover\:bg-red-50:hover { background-color: rgba(239, 68, 68, 0.14) !important; }
+.dark .border-red-400 { border-color: rgba(239, 68, 68, 0.5) !important; }
+.dark .border-red-500 { border-color: rgba(239, 68, 68, 0.6) !important; }
+
+.dark .bg-green-50 { background-color: rgba(34, 197, 94, 0.12) !important; }
+.dark .bg-green-100 { background-color: rgba(34, 197, 94, 0.18) !important; }
+.dark .text-green-600 { color: #6fe39a !important; }
+.dark .text-green-700 { color: #8fefb3 !important; }
+.dark .text-green-800 { color: #b0f4c8 !important; }
+
+.dark .bg-emerald-50 { background-color: rgba(16, 185, 129, 0.12) !important; }
+.dark .bg-emerald-100 { background-color: rgba(16, 185, 129, 0.18) !important; }
+.dark .text-emerald-600 { color: #5fdfa8 !important; }
+.dark .text-emerald-800 { color: #a7f0cd !important; }
+.dark .border-emerald-500 { border-color: rgba(16, 185, 129, 0.6) !important; }
+
+.dark .bg-amber-50 { background-color: rgba(245, 158, 11, 0.12) !important; }
+.dark .bg-amber-100 { background-color: rgba(245, 158, 11, 0.2) !important; }
+.dark .text-amber-600 { color: #f7c66b !important; }
+.dark .text-amber-800 { color: #fadf9f !important; }
+
+.dark .bg-yellow-50 { background-color: rgba(234, 179, 8, 0.12) !important; }
+.dark .bg-yellow-100 { background-color: rgba(234, 179, 8, 0.2) !important; }
+.dark .text-yellow-700 { color: #f5d871 !important; }
+.dark .text-yellow-800 { color: #f8e294 !important; }
+
+.dark .bg-blue-50 { background-color: rgba(59, 130, 246, 0.12) !important; }
+.dark .bg-blue-100 { background-color: rgba(59, 130, 246, 0.2) !important; }
+.dark .text-blue-700 { color: #8ab9ff !important; }
+.dark .text-blue-800 { color: #a3caff !important; }
+
+.dark .bg-indigo-50 { background-color: rgba(99, 102, 241, 0.12) !important; }
+.dark .bg-indigo-100 { background-color: rgba(99, 102, 241, 0.2) !important; }
+.dark .text-indigo-600 { color: #a5a8ff !important; }
+.dark .text-indigo-800 { color: #c7c9ff !important; }
+
+.dark .bg-violet-50 { background-color: rgba(139, 92, 246, 0.12) !important; }
+.dark .bg-violet-100 { background-color: rgba(139, 92, 246, 0.2) !important; }
+.dark .text-violet-600 { color: #b79aff !important; }
+.dark .text-violet-700 { color: #c4a8ff !important; }
+.dark .text-violet-800 { color: #d5beff !important; }
+
+.dark .bg-orange-50 { background-color: rgba(249, 115, 22, 0.12) !important; }
+.dark .bg-orange-100 { background-color: rgba(249, 115, 22, 0.2) !important; }
+.dark .text-orange-700 { color: #ffb27a !important; }
+
+/* Generic black/white overlays */
+.dark .bg-black\/40 { background-color: rgba(0, 0, 0, 0.6) !important; }
+.dark .bg-black\/50 { background-color: rgba(0, 0, 0, 0.65) !important; }
+
+/* Ring colors for focus on dark */
+.dark .focus\:ring-primary-500:focus { --tw-ring-color: rgba(110, 168, 255, 0.5); }
+.dark .focus\:border-primary-500:focus { border-color: #6ea8ff !important; }
+
+/* Tables / hover rows */
+.dark tbody tr:hover {
+  background-color: #1f2329 !important;
+}
+
+/* Code blocks */
+.dark code {
+  background-color: #22262d;
+  color: #e6e8eb;
+}
+
+/* Disabled / muted */
+.dark .opacity-50 { opacity: 0.45; }
