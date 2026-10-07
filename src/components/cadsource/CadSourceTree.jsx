@@ -37,7 +37,7 @@ function fmtSize(bytes) {
  * Nothing is fetched until a folder is opened: the root holds a virtualenv and
  * a 286 MB archive, so a recursive walk would be both slow and pointless.
  */
-export function CadSourceTree({ selected, onSelect, className = '' }) {
+export function CadSourceTree({ selected, onSelect, root = '', className = '' }) {
   const [children, setChildren] = useState({}); // rel -> entries[]
   const [open, setOpen] = useState({});
   const [loading, setLoading] = useState({});
@@ -58,10 +58,11 @@ export function CadSourceTree({ selected, onSelect, className = '' }) {
     [children]
   );
 
+  // Re-reads when the operator points the page at a different folder.
   useEffect(() => {
-    load('');
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- once, for the root
-  }, []);
+    load(root);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- load closes over its own cache
+  }, [root]);
 
   function toggle(rel) {
     const next = !open[rel];
@@ -160,5 +161,5 @@ export function CadSourceTree({ selected, onSelect, className = '' }) {
     });
   }
 
-  return <div className={cx('overflow-y-auto', className)}>{renderLevel('', 0)}</div>;
+  return <div className={cx('overflow-y-auto', className)}>{renderLevel(root, 0)}</div>;
 }

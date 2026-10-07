@@ -56,6 +56,7 @@ export const apiPaths = {
   // cad source (CAD_ROOT browser + Python introspection)
   cadCapabilities: '/cad-source/capabilities',
   cadTree: (rel = '') => `/cad-source/tree?path=${encodeURIComponent(rel)}`,
+  cadResolveFolder: '/cad-source/resolve-folder',
   cadFile: (rel) => `/cad-source/file?path=${encodeURIComponent(rel)}`,
   cadRaw: (rel) => `/cad-source/raw?path=${encodeURIComponent(rel)}`,
   cadIntrospect: (rel) => `/cad-source/introspect?path=${encodeURIComponent(rel)}`,

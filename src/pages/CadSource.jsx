@@ -23,6 +23,7 @@ import { ParamTable } from '@/components/cadsource/ParamTable';
 import { ModelPanel } from '@/components/cadsource/ModelPanel';
 import { DiffModal } from '@/components/cadsource/DiffModal';
 import { RebuildPanel } from '@/components/cadsource/RebuildPanel';
+import { WorkFolderBar, WorkFolderPicker } from '@/components/cadsource/WorkFolderPicker';
 import { Button } from '@/components/ui/Button';
 import { api, apiPaths } from '@/lib/api';
 import { toast } from '@/stores/useToastStore';
@@ -40,6 +41,10 @@ export function CadSource() {
   const [caps, setCaps] = useState(null);
   const [capsError, setCapsError] = useState(null);
   const [selected, setSelected] = usePref('cadsource:selected', null);
+  // Where the tree opens. Per browser on purpose: which job someone is on is
+  // their business, and the server should not decide it for everyone.
+  const [workFolder, setWorkFolder] = usePref('cadsource:workFolder', '');
+  const [folderPickerOpen, setFolderPickerOpen] = useState(false);
 
   const [files, setFiles] = useState({}); // rel -> { text, lineCount, ... }
   const [activeFile, setActiveFile] = useState(null);
@@ -311,13 +316,20 @@ export function CadSource() {
         <Card className="lg:sticky lg:top-4">
           <CardHeader
             title="Project tree"
-            subtitle={caps.cadRoot}
+            subtitle={workFolder ? `${caps.cadRoot} › ${workFolder}` : caps.cadRoot}
             icon={<IconFileCode size={18} aria-hidden="true" />}
+          />
+          <WorkFolderBar
+            folder={workFolder}
+            cadRoot={caps.cadRoot}
+            onChange={() => setFolderPickerOpen(true)}
+            onClear={() => setWorkFolder('')}
           />
           <CadSourceTree
             selected={selected}
             onSelect={handleSelect}
-            className="max-h-[calc(100vh-260px)] -mx-1"
+            root={workFolder}
+            className="max-h-[calc(100vh-290px)] -mx-1"
           />
         </Card>
 
@@ -443,6 +455,20 @@ export function CadSource() {
           )}
         </Card>
       </div>
+
+      <WorkFolderPicker
+        open={folderPickerOpen}
+        onClose={() => setFolderPickerOpen(false)}
+        current={workFolder}
+        cadRoot={caps.cadRoot}
+        onPick={(res) => {
+          setWorkFolder(res.rel);
+          toast.success(
+            `Working in ${res.name}`,
+            `${res.counts.scripts} script · ${res.counts.models} mô hình · ${res.counts.folders} thư mục con`
+          );
+        }}
+      />
 
       <DiffModal
         open={diffOpen}

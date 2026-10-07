@@ -133,6 +133,54 @@ export function toRel(abs) {
   return path.relative(fs.realpathSync.native(CAD_ROOT), abs).replace(/\\/g, '/');
 }
 
+/**
+ * Turn a path the operator typed or pasted into one of our relative ids.
+ *
+ * They work in Explorer and think in absolute paths, so the UI accepts
+ * "C:\Users\...\02. LCD\F_Pebble" as readily as "02. LCD/F_Pebble". CAD_ROOT
+ * stays the fence either way: anything outside it is refused by name, so the
+ * message can say which folder the app is allowed to read.
+ */
+export function relFromInput(input) {
+  if (!isConfigured()) throw httpError(400, 'CAD_ROOT is not configured', 'NO_ROOT');
+  const raw = String(input ?? '').trim().replace(/^["']|["']$/g, '');
+  if (!raw) return '';
+
+  const rootReal = fs.realpathSync.native(CAD_ROOT);
+  const normalised = raw.replace(/\\/g, '/');
+  let rel = normalised;
+
+  if (path.isAbsolute(normalised) || /^[a-zA-Z]:/.test(normalised)) {
+    const abs = path.resolve(normalised);
+    const back = path.relative(rootReal, abs);
+    const outside =
+      back.startsWith('..') ||
+      path.isAbsolute(back) ||
+      (process.platform === 'win32' &&
+        abs.toLowerCase() !== rootReal.toLowerCase() &&
+        !(abs + path.sep).toLowerCase().startsWith((rootReal + path.sep).toLowerCase()));
+    if (outside) {
+      throw httpError(
+        403,
+        `That folder is outside CAD_ROOT (${CAD_ROOT}) / Thư mục nằm ngoài vùng cho phép`,
+        'OUTSIDE_ROOT'
+      );
+    }
+    rel = back.replace(/\\/g, '/');
+  }
+
+  // resolveInRoot does the real containment proof, including symlinks.
+  const abs = resolveInRoot(rel);
+  let st;
+  try {
+    st = fs.statSync(abs);
+  } catch {
+    throw httpError(404, `Not found: ${raw}`);
+  }
+  if (!st.isDirectory()) throw httpError(400, `Not a folder: ${raw}`);
+  return toRel(abs);
+}
+
 // ---------------------------------------------------------------- caches
 // Both are keyed by `${abs}:${mtimeMs}:${size}`, so a changed file misses.
 const scriptCache = new Map();

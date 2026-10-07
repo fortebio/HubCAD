@@ -31,6 +31,7 @@ import {
   isModelScript,
   listDir,
   readTextFile,
+  relFromInput,
   resolveInRoot,
   sha1Of,
   httpError,
@@ -73,6 +74,29 @@ router.get('/capabilities', async (req, res, next) => {
 router.get('/tree', (req, res, next) => {
   try {
     res.json(listDir(req.query.path || ''));
+  } catch (e) {
+    next(e);
+  }
+});
+
+/**
+ * Accept a folder the operator typed or pasted — absolute or already relative —
+ * and hand back the id the rest of the API speaks, with a short summary so the
+ * UI can confirm it picked the right place before switching to it.
+ */
+router.post('/resolve-folder', (req, res, next) => {
+  try {
+    const rel = relFromInput(req.body?.path);
+    const { entries } = listDir(rel);
+    res.json({
+      rel,
+      name: rel ? rel.split('/').pop() : CAD_ROOT.split(/[\\/]/).pop(),
+      counts: {
+        folders: entries.filter((e) => e.kind === 'dir').length,
+        scripts: entries.filter((e) => e.kind === 'script').length,
+        models: entries.filter((e) => e.kind === 'model' || e.kind === 'mesh').length,
+      },
+    });
   } catch (e) {
     next(e);
   }
