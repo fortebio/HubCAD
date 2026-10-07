@@ -30,9 +30,40 @@ export const api = {
   patch: (path, body) => request(path, { method: 'PATCH', body }),
   del: (path) => request(path, { method: 'DELETE' }),
   upload: (path, formData) => request(path, { method: 'POST', body: formData }),
+  /**
+   * Binary GET. `request` decodes every non-JSON response as text, which would
+   * corrupt a STEP or STL, so this one stays raw.
+   */
+  blob: async (path) => {
+    const token = getToken();
+    const res = await fetch(`${BASE}${path}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    if (!res.ok) {
+      let message = `${res.status} ${res.statusText}`;
+      try {
+        message = (await res.json())?.error || message;
+      } catch {
+        /* keep the status line */
+      }
+      throw new Error(message);
+    }
+    return res.blob();
+  },
 };
 
 export const apiPaths = {
+  // cad source (CAD_ROOT browser + Python introspection)
+  cadCapabilities: '/cad-source/capabilities',
+  cadTree: (rel = '') => `/cad-source/tree?path=${encodeURIComponent(rel)}`,
+  cadFile: (rel) => `/cad-source/file?path=${encodeURIComponent(rel)}`,
+  cadRaw: (rel) => `/cad-source/raw?path=${encodeURIComponent(rel)}`,
+  cadIntrospect: (rel) => `/cad-source/introspect?path=${encodeURIComponent(rel)}`,
+  cadPreview: '/cad-source/preview',
+  cadWrite: '/cad-source/write',
+  cadRebuild: '/cad-source/rebuild',
+  cadAllowRebuild: '/cad-source/allow-rebuild',
+  cadRebuildStatus: (rel) => `/cad-source/rebuild-status?path=${encodeURIComponent(rel)}`,
   // auth
   login: '/auth/login',
   me: '/auth/me',

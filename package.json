@@ -6,6 +6,7 @@
   "description": "Technical Drawing Publishing Tool for Forte Biotech",
   "scripts": {
     "dev": "vite",
+    "test": "node --test \"server/**/*.test.js\"",
     "postinstall": "node scripts/copy-occt.js",
     "setup:occt": "node scripts/copy-occt.js",
     "server": "tsx watch server/index.js",
@@ -21,8 +22,8 @@
     "@react-pdf/renderer": "^4.1.5",
     "@tabler/icons-react": "^3.26.0",
     "archiver": "^7.0.1",
-    "better-sqlite3": "^12.4.1",
     "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^12.4.1",
     "clsx": "^2.1.1",
     "cors": "^2.8.5",
     "docx": "^9.0.3",
@@ -38,6 +39,7 @@
     "react-router-dom": "^6.28.0",
     "recharts": "^2.13.3",
     "three": "^0.169.0",
+    "tsx": "^4.23.13",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
     "zustand": "^5.0.1"
   },
@@ -50,7 +52,6 @@
     "drizzle-kit": "^0.28.1",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.15",
-    "tsx": "^4.19.2",
     "vite": "^5.4.11"
   }
 }

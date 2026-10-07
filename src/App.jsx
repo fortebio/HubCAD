@@ -21,6 +21,7 @@ import { Backup } from '@/pages/Backup';
 import { UserManagement } from '@/pages/UserManagement';
 import { AuditLog } from '@/pages/AuditLog';
 import { CostSettings } from '@/pages/CostSettings';
+import { CadSource } from '@/pages/CadSource';
 
 function RequireAuth({ children }) {
   const token = useAuthStore((s) => s.token);
@@ -56,6 +57,7 @@ export default function App() {
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/viewer" element={<Viewer3D />} />
+        <Route path="/cad-source" element={<CadSource />} />
                   <Route path="/bom" element={<BOMManager />} />
                   <Route path="/quote" element={<QuoteEstimator />} />
                   <Route path="/checklist" element={<DrawingChecklist />} />

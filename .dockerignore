@@ -1,0 +1,12 @@
+node_modules
+dist
+public/occt
+data
+uploads
+.env
+.env.local
+.git
+.claude
+.vscode
+.idea
+*.log
