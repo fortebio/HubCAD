@@ -2,6 +2,20 @@ import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef } from 'rea
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { layoutInventory } from '@/lib/explodeLayout';
+import { useThemeStore } from '@/stores/useThemeStore';
+
+/**
+ * Viewport palette per theme. The background keeps the same relationship to the
+ * card it sits in as the light theme has — a shade off the card, so the model
+ * reads against it — and the grid uses the app's own dark border greys.
+ *
+ * Exported PNGs are deliberately NOT themed: captureView keeps its white
+ * background because those images go into drawings and PDFs.
+ */
+const VIEWPORT = {
+  light: { bg: 0xf5f7fa, grid: [0xd1d5db, 0xe5e7eb], gridOpacity: 0.5 },
+  dark: { bg: 0x12151a, grid: [0x3a4047, 0x2a2f37], gridOpacity: 0.65 },
+};
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Dimension overlay helpers — draw real engineering-drawing dimension lines on
@@ -255,6 +269,12 @@ export const STLViewer = forwardRef(function STLViewer(
   const bboxRef = useRef(null);
   const gridRef = useRef(null);
   const axesRef = useRef(null);
+
+  // The scene is built once; this ref lets that one-off setup see the theme,
+  // and the effect below repaints it when the operator switches afterwards.
+  const theme = useThemeStore((st) => st.effective);
+  const themeRef = useRef(theme);
+  themeRef.current = VIEWPORT[theme] ? theme : 'light';
   // Explosion state lives outside React so the render loop can ease toward
   // the requested amount without re-rendering the tree every frame.
   const amountRef = useRef(0);
@@ -523,7 +543,7 @@ export const STLViewer = forwardRef(function STLViewer(
     const height = container.clientHeight;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xf5f7fa);
+    scene.background = new THREE.Color(VIEWPORT[themeRef.current].bg);
 
     const camera = new THREE.PerspectiveCamera(45, width && height ? width / height : 1, 0.1, 10000);
     camera.position.set(100, 100, 100);
@@ -543,8 +563,9 @@ export const STLViewer = forwardRef(function STLViewer(
     dir2.position.set(-100, -50, -100);
     scene.add(dir2);
 
-    const grid = new THREE.GridHelper(500, 50, 0xd1d5db, 0xe5e7eb);
-    grid.material.opacity = 0.5;
+    const palette = VIEWPORT[themeRef.current];
+    const grid = new THREE.GridHelper(500, 50, palette.grid[0], palette.grid[1]);
+    grid.material.opacity = palette.gridOpacity;
     grid.material.transparent = true;
     scene.add(grid);
     gridRef.current = grid;
@@ -797,6 +818,24 @@ export const STLViewer = forwardRef(function STLViewer(
     frameBox(visibleBox(targetAmountRef.current), viewDir(view));
     // eslint-disable-next-line react-hooks/exhaustive-deps -- view is the trigger.
   }, [view]);
+
+  // Repaint the viewport when the theme changes under a scene that already
+  // exists. Only the background and grid move; the lights stay put, because
+  // they decide how a surface reads and that must not depend on the theme.
+  useEffect(() => {
+    const palette = VIEWPORT[theme] || VIEWPORT.light;
+    if (sceneRef.current) sceneRef.current.background = new THREE.Color(palette.bg);
+    const grid = gridRef.current;
+    if (grid) {
+      const next = new THREE.GridHelper(500, 50, palette.grid[0], palette.grid[1]);
+      grid.material.colors = next.material.colors;
+      grid.geometry.setAttribute('color', next.geometry.getAttribute('color'));
+      grid.material.opacity = palette.gridOpacity;
+      grid.material.needsUpdate = true;
+      next.geometry.dispose();
+      next.material.dispose();
+    }
+  }, [theme]);
 
   return <div ref={containerRef} className="w-full h-full" />;
 });
