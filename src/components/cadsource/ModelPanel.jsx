@@ -134,7 +134,7 @@ export function ModelPanel({ rel, onPickPart, selectedName = null, className = '
               type="button"
               onClick={() => setView(v.key)}
               className={cx(
-                'px-1.5 py-0.5 text-[10px] rounded border transition-colors',
+                'px-2 py-1 text-[10px] rounded border transition-colors min-h-[24px]',
                 view === v.key
                   ? 'border-primary-300 bg-primary-50 text-primary-700'
                   : 'border-gray-200 text-gray-600 hover:bg-gray-50'
@@ -179,8 +179,8 @@ export function ModelPanel({ rel, onPickPart, selectedName = null, className = '
                 }
                 aria-pressed={!off}
                 className={cx(
-                  'flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] border whitespace-nowrap transition-colors',
-                  off ? 'border-gray-200 text-gray-400' : 'border-gray-200 text-gray-700 hover:bg-gray-50'
+                  'flex items-center gap-1 px-2 py-1 rounded text-[10px] border whitespace-nowrap transition-colors min-h-[24px]',
+                  off ? 'border-gray-200 text-gray-500' : 'border-gray-200 text-gray-700 hover:bg-gray-50'
                 )}
                 title={`${l.en} / ${l.vn}`}
               >

@@ -152,7 +152,7 @@ export function CadSourceTree({ selected, onSelect, root = '', className = '' })
               />
             )}
             {!isDir && (
-              <span className="text-[10px] font-mono text-gray-400 shrink-0">{fmtSize(e.size)}</span>
+              <span className="text-[10px] font-mono text-gray-500 shrink-0">{fmtSize(e.size)}</span>
             )}
           </button>
           {isDir && isOpen && renderLevel(e.rel, depth + 1)}

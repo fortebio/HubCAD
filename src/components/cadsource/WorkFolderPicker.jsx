@@ -194,7 +194,7 @@ export function WorkFolderBar({ folder, cadRoot, onChange, onClear }) {
       <button
         type="button"
         onClick={onChange}
-        className="flex-1 min-w-0 text-left text-[11px] font-mono text-gray-700 hover:text-primary-700 truncate"
+        className="flex-1 min-w-0 text-left text-[11px] font-mono text-gray-700 hover:text-primary-700 truncate py-1 min-h-[24px]"
         title={folder ? `${cadRoot}/${folder}` : cadRoot}
       >
         {folder || cadRoot}

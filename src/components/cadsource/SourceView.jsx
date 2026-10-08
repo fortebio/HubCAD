@@ -127,7 +127,7 @@ export function SourceView({ text = '', fileName = '', jumpTo = null, className 
                   )}
                 >
                   <span
-                    className="select-none text-right pr-3 pl-2 text-gray-400 shrink-0 sticky left-0 bg-gray-50"
+                    className="select-none text-right pr-3 pl-2 text-gray-500 shrink-0 sticky left-0 bg-gray-50"
                     style={{ width: gutterWidth }}
                     aria-hidden="true"
                   >

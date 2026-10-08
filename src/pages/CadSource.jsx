@@ -542,7 +542,7 @@ function ExportsStrip({ exports }) {
           <div className="flex items-center gap-1.5 text-gray-600 mb-1">
             <IconFileExport size={13} aria-hidden="true" />
             <span className="font-mono">{ex.prefix}</span>
-            <span className="text-gray-400">· dòng {ex.call.lineno}</span>
+            <span className="text-gray-500">· dòng {ex.call.lineno}</span>
           </div>
           <ul className="space-y-0.5 pl-4">
             <OutputRow label="assembly" art={ex.assembly} />
@@ -571,7 +571,7 @@ function OutputRow({ label, art, alt = null }) {
       <span className="font-mono text-gray-700 truncate min-w-0 flex-1" title={art.rel}>
         {label}
       </span>
-      <span className="text-gray-400 shrink-0">
+      <span className="text-gray-500 shrink-0">
         {art.exists ? 'step' : '—'}
         {alt?.exists ? ' + stl' : ''}
       </span>

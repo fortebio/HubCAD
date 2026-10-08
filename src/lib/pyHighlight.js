@@ -212,7 +212,7 @@ export function highlightPython(src) {
 export const TOKEN_CLASS = {
   cm: 'text-gray-500 italic',
   st: 'text-emerald-700 dark:text-emerald-400',
-  nu: 'text-orange-600 dark:text-orange-400',
+  nu: 'text-orange-700 dark:text-orange-400',
   kw: 'text-purple-700 dark:text-purple-400 font-medium',
   cn: 'text-sky-700 dark:text-sky-400',
   fn: 'text-blue-700 dark:text-blue-400 font-medium',

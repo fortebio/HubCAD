@@ -6,7 +6,7 @@ import {
   IconChevronDown,
   IconAlertTriangle,
   IconLock,
-  IconPencil,
+  IconAlertHexagon,
   IconArrowBackUp,
 } from '@tabler/icons-react';
 import { cx } from '@/lib/cx';
@@ -156,7 +156,7 @@ export function ParamTable({
                   )}
                   <span className="truncate font-mono normal-case">{file.split('/').pop()}</span>
                   {isEntry && (
-                    <span className="px-1 rounded bg-primary-100 text-primary-700 text-[9px] uppercase tracking-wide">
+                    <span className="px-1 rounded bg-primary-100 text-primary-700 text-[10px] uppercase tracking-wide">
                       entry
                     </span>
                   )}
@@ -205,20 +205,29 @@ function ParamRow({ p, onJump, canEdit = false, draft, onEdit }) {
           {shadow && (
             <span
               className={cx(
-                'inline-flex items-center gap-0.5 px-1 rounded text-[9px] border shrink-0',
+                'inline-flex items-center gap-0.5 px-1 rounded text-[10px] border shrink-0',
                 divergent
                   ? 'text-red-700 bg-red-50 border-red-200'
                   : 'text-amber-700 bg-amber-50 border-amber-200'
               )}
-              title={`Also declared in: ${shadow.map((s) => `${s.file.split('/').pop()} = ${fmt(s.value)}`).join(', ')}`}
+              title={
+                (divergent
+                  ? 'Declared in several files with DIFFERENT values / Khai báo nhiều nơi, giá trị khác nhau: '
+                  : 'Declared in several files, same value / Khai báo nhiều nơi, cùng giá trị: ') +
+                shadow.map((s) => `${s.file.split('/').pop()} = ${fmt(s.value)}`).join(', ')
+              }
             >
-              <IconAlertTriangle size={9} aria-hidden="true" />
-              {shadow.length + 1}×
+              {divergent ? (
+                <IconAlertHexagon size={10} aria-hidden="true" />
+              ) : (
+                <IconAlertTriangle size={10} aria-hidden="true" />
+              )}
+              {shadow.length + 1}×{divergent ? ' ≠' : ''}
             </span>
           )}
           {!p.editable && (
             <span
-              className={cx('inline-flex items-center gap-0.5 px-1 rounded text-[9px] border shrink-0', role.cls)}
+              className={cx('inline-flex items-center gap-0.5 px-1 rounded text-[10px] border shrink-0', role.cls)}
             >
               <IconLock size={9} aria-hidden="true" />
               {role.label}
@@ -261,7 +270,7 @@ function ParamRow({ p, onJump, canEdit = false, draft, onEdit }) {
         </div>
         {(p.comment || p.expr) && (
           <div className="text-[10px] text-gray-500 truncate pr-1">
-            {p.expr && <span className="font-mono text-sky-600 mr-1">= {p.expr}</span>}
+            {p.expr && <span className="font-mono text-sky-700 mr-1">= {p.expr}</span>}
             {p.comment}
           </div>
         )}
