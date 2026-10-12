@@ -377,6 +377,18 @@ Cost & quotes:
 Checklists:
   POST   /api/checklists              { document_id, checklist_type, results }
   GET    /api/checklists/:document_id ?type=
+
+CAD source (reads CAD_ROOT on the workstation; Python half is host-only):
+  GET    /api/cad-source/capabilities      → { configured, cadRoot, python, you }
+  GET    /api/cad-source/tree              ?path=        one level, lazy
+  GET    /api/cad-source/file              ?path=        text + sha1 + eol
+  GET    /api/cad-source/raw               ?path=        bytes for the 3D viewer (ETag)
+  GET    /api/cad-source/introspect        ?path=*.py  → params, graph, parts, exports
+  POST   /api/cad-source/preview           { entry, edits } → diffs + constraints
+  POST   /api/cad-source/write             { entry, edits }  -- designer|manager, .bak first
+  GET    /api/cad-source/rebuild-status    ?path=
+  POST   /api/cad-source/allow-rebuild     { script }        -- manager only
+  POST   /api/cad-source/rebuild           { script, args }  -- runs the script (~6-8 s)
 ```
 
 ## Status workflow
@@ -512,16 +524,41 @@ npm run db:reset     # Drop and recreate
 # Build
 npm run build        # Production build
 npm run preview      # Preview production build
+
+# Deploy (Docker on this machine, tailnet-only via Tailscale Serve)
+docker compose up -d --build                                   # Express serves /api + dist/ on 127.0.0.1:3001
+tailscale serve --bg --https=8443 http://127.0.0.1:3001        # once; persists across reboots
+# → https://desktop-01e5115.tail190c03.ts.net:8443   (data/ and uploads/ are bind-mounted volumes)
 ```
 
 ## Environment variables
 
 ```env
-PORT=3001
+API_PORT=3002          # dev; docker-compose overrides to 3001
 DATABASE_URL=./data/drawing-tool.db
 JWT_SECRET=your-secret-here
 UPLOAD_DIR=./uploads
+CAD_ROOT=              # folder holding the CAD projects; empty disables the CAD Source page
+CAD_PYTHON=            # optional: pin the interpreter (default: the project .venv, then PATH)
 ```
+
+### CAD Source page
+
+Reads CadQuery scripts under `CAD_ROOT`, shows their parameters beside the model
+they generate, and can edit a numeric literal and re-run the script.
+
+- Parameter extraction and rebuild both spawn the project's own `.venv` Python,
+  so that half only works where Python lives — the page degrades to read-only in
+  the Docker image and says so.
+- Writes splice **UTF-8 byte ranges** from Python's `ast`, never string indices:
+  these files carry `±`, `°` and Vietnamese, and a character index cuts wrong.
+  Covered by `npm test` (`server/services/cadEdit.test.js`).
+- Every write backs up to `<CAD_ROOT>/.hubcad-bak/` first and is audited.
+- Rebuild is gated: the script must import cadquery and have a `__main__` block,
+  its folder must carry `.hubcad.json` with `"allowRebuild": true`, only
+  `--check` may be passed, one run at a time, 120 s timeout.
+- Shop invariants live in `<CAD_ROOT>/.hubcad/constraints.json` and block a write
+  that breaks them.
 
 ## Important notes for Claude Code
 

@@ -8,6 +8,7 @@ import { STLViewer } from '@/components/viewer/STLViewer';
 import { SaveDrawingModal } from '@/components/viewer/SaveDrawingModal';
 import { DrawingPreview } from '@/components/viewer/DrawingPreview';
 import { AssemblyBOMModal } from '@/components/viewer/AssemblyBOMModal';
+import { CadFolderBrowser } from '@/components/viewer/CadFolderBrowser';
 import { computeBoundingBox } from '@/lib/stlParser';
 import { computeMeshStats } from '@/lib/massProperties';
 import { useCostStore } from '@/stores/useCostStore';
@@ -548,13 +549,20 @@ export function Viewer3D() {
             </div>
           ) : models.length === 0 ? (
             <div className="flex-1 flex items-center justify-center p-6">
-              <FileUpload
-                multiple
-                onFiles={handleFiles}
-                accept={ACCEPT}
-                hint="Supported: .stl, .obj, .step / .stp, .iges / .igs, .brep — chọn hoặc kéo thả nhiều file. A STEP assembly is split into its parts / Cụm STEP sẽ được tách thành từng chi tiết"
-                className="w-full max-w-md"
-              />
+              <div className="w-full max-w-md space-y-3">
+                <FileUpload
+                  multiple
+                  onFiles={handleFiles}
+                  accept={ACCEPT}
+                  hint="Supported: .stl, .obj, .step / .stp, .iges / .igs, .brep — chọn hoặc kéo thả nhiều file. A STEP assembly is split into its parts / Cụm STEP sẽ được tách thành từng chi tiết"
+                />
+                <div className="flex items-center gap-3 text-[11px] text-gray-500">
+                  <span className="flex-1 h-px bg-gray-200" />
+                  or / hoặc
+                  <span className="flex-1 h-px bg-gray-200" />
+                </div>
+                <CadFolderBrowser onOpenFiles={handleFiles} busy={!!progress} />
+              </div>
             </div>
           ) : (
             <div className="flex-1 relative">
@@ -928,6 +936,8 @@ export function Viewer3D() {
               />
             </div>
           </Card>
+
+          <CadFolderBrowser onOpenFiles={handleFiles} busy={!!progress} />
 
           {tree.roots.length > 0 && (
             <Card>

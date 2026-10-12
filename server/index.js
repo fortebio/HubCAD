@@ -22,9 +22,10 @@ import drawingsRouter from './routes/drawings.js';
 import drawingTemplatesRouter from './routes/drawingTemplates.js';
 import costSettingsRouter from './routes/costSettings.js';
 import quotesRouter from './routes/quotes.js';
+import cadSourceRouter from './routes/cadSource.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.API_PORT || 3002;
 const UPLOAD_DIR = path.resolve(process.cwd(), process.env.UPLOAD_DIR || './uploads');
 
 for (const sub of ['models', 'images', 'documents']) {
@@ -57,12 +58,26 @@ app.use('/api/drawings', drawingsRouter);
 app.use('/api/drawing-templates', drawingTemplatesRouter);
 app.use('/api/cost-settings', costSettingsRouter);
 app.use('/api/quotes', quotesRouter);
+app.use('/api/cad-source', cadSourceRouter);
+
+// Production: serve the Vite build from dist/ with an SPA fallback so deep
+// links (/quote, /viewer/…) resolve to index.html. In dev, Vite serves the
+// frontend itself and proxies /api + /uploads here, so dist/ does not exist.
+const DIST_DIR = path.resolve(__dirname, '..', 'dist');
+if (fs.existsSync(path.join(DIST_DIR, 'index.html'))) {
+  app.use(express.static(DIST_DIR, { index: false }));
+  app.get(/^(?!\/api\/|\/uploads\/).*/, (_, res) => {
+    res.sendFile(path.join(DIST_DIR, 'index.html'));
+  });
+  console.log(`[web] serving ${DIST_DIR}`);
+}
 
 app.use((err, req, res, _next) => {
   console.error('[api error]', err);
   res.status(err.status || 500).json({ error: err.message || 'Internal error' });
 });
 
-app.listen(PORT, () => {
-  console.log(`[api] listening on http://localhost:${PORT}`);
+const HOST = process.env.HOST || '0.0.0.0';
+app.listen(PORT, HOST, () => {
+  console.log(`[api] listening on http://${HOST}:${PORT}`);
 });

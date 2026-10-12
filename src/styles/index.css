@@ -497,3 +497,36 @@
 
 /* Disabled / muted */
 .dark .opacity-50 { opacity: 0.45; }
+
+/* ---------------------------------------------------------------------------
+   Dark overrides for the accent colours the CAD Source page introduced.
+
+   Those utilities are tuned for dark text on a light tint. Left alone on the
+   dark theme they sit at 1.5:1 to 4.1:1 — measured, with the worst being the
+   selected row in the file tree. Each pair below is the same hue lifted until
+   it clears 4.5:1 against the dark card background (#1a1d24).
+   -------------------------------------------------------------------------- */
+.dark .text-primary-800 { color: #b9d4ff !important; }
+.dark .text-sky-700 { color: #7cc4f0 !important; }
+.dark .text-sky-600 { color: #76c0ee !important; }
+.dark .text-amber-700 { color: #f0b858 !important; }
+.dark .text-emerald-700 { color: #58c99a !important; }
+.dark .text-emerald-900 { color: #8ddfbb !important; }
+.dark .text-orange-700 { color: #f0a06a !important; }
+.dark .text-red-900 { color: #ff9b9b !important; }
+.dark .text-purple-600 { color: #c4a0f5 !important; }
+
+/* Light tints that have no dark counterpart yet — without these they stay
+   bright patches on a dark page. */
+.dark .bg-sky-50 { background-color: rgba(56, 189, 248, 0.12) !important; }
+.dark .bg-orange-50 { background-color: rgba(249, 115, 22, 0.12) !important; }
+.dark .bg-gray-50\/60 { background-color: rgba(15, 18, 23, 0.6) !important; }
+.dark .bg-primary-50\/60 { background-color: rgba(110, 168, 255, 0.1) !important; }
+.dark .bg-white\/80 { background-color: rgba(26, 29, 36, 0.85) !important; }
+.dark .bg-white\/95 { background-color: rgba(26, 29, 36, 0.95) !important; }
+.dark .border-gray-50 { border-color: #1f2329 !important; }
+.dark .border-emerald-200 { border-color: rgba(16, 185, 129, 0.35) !important; }
+.dark .border-amber-200 { border-color: rgba(245, 158, 11, 0.35) !important; }
+.dark .border-red-200 { border-color: rgba(239, 68, 68, 0.35) !important; }
+.dark .border-sky-200 { border-color: rgba(56, 189, 248, 0.35) !important; }
+.dark .border-orange-200 { border-color: rgba(249, 115, 22, 0.35) !important; }

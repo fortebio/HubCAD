@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import {
   IconLayoutDashboard,
   Icon3dCubeSphere,
+  IconFileCode,
   IconListDetails,
   IconCalculator,
   IconAdjustments,
@@ -35,6 +36,7 @@ const SECTIONS = [
     label: { en: 'Design', vn: 'Thiết kế' },
     items: [
       { to: '/viewer', icon: Icon3dCubeSphere, en: '3D Viewer', vn: 'Xem 3D' },
+      { to: '/cad-source', icon: IconFileCode, en: 'CAD Source', vn: 'Mã nguồn CAD' },
       { to: '/bom', icon: IconListDetails, en: 'BOM Manager', vn: 'Quản lý BOM' },
       { to: '/quote', icon: IconCalculator, en: 'Cost & Quote', vn: 'Ước tính & Báo giá' },
     ],
